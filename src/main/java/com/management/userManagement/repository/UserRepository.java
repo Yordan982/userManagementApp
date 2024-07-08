@@ -1,12 +1,12 @@
 package com.management.userManagement.repository;
 
-import org.apache.catalina.User;
+import com.management.userManagement.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
-    Optional<User> findById(Long id);
+public interface UserRepository extends JpaRepository<UserEntity, Integer> {
+    Optional<UserEntity> findById(Long id);
 }
