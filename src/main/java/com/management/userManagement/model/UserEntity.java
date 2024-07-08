@@ -80,4 +80,9 @@ public class UserEntity {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @Override
+    public String toString() {
+        return "Name: " + firstName + " " + lastName + ", birthday: " + dateOfBirth + ", phone: " + phoneNumber + ", email: " + email;
+    }
 }
