@@ -15,7 +15,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                                 .anyRequest().permitAll()
-                );
+                ).csrf().disable();
         return httpSecurity.build();
     }
 }
