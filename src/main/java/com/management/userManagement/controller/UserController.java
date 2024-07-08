@@ -47,16 +47,13 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<String> viewUser(@PathVariable Long id, Model model) {
+    public ResponseEntity<String> viewUser(@PathVariable String id) {
         try {
-            Optional<UserEntity> userOptional = userRepository.findById(id);
-            if (userOptional.isPresent()) {
-                UserEntity user = userOptional.get();
-                model.addAttribute("user", user);
-                return ResponseEntity.status(HttpStatus.OK).body(user.toString());
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The user with this id does not exist.");
-            }
+            Long userId = Long.parseLong(id);
+            Optional<UserEntity> user = userRepository.findById(userId);
+            return user.map(userEntity -> ResponseEntity.status(HttpStatus.OK).body(userEntity.toString())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User id " + userId + " does not exist."));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid format for user id: " + id);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
