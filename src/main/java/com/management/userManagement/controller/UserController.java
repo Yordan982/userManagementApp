@@ -32,7 +32,7 @@ public class UserController {
         return "index";
     }
 
-    @PostMapping("/register")
+    @PostMapping("/user/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         try {
             boolean isSuccess = userService.register(registrationDTO);
@@ -96,6 +96,20 @@ public class UserController {
             }
         } catch (NumberFormatException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid format for user id: " + id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
+    }
+
+    @GetMapping("/user/all")
+    public ResponseEntity<String> showAllUsers() {
+        try {
+            List<UserEntity> users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
+            if (users.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(users.toString());
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
