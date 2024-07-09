@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,8 +50,6 @@ public class UserController {
     @PutMapping("/user/{userId}/update")
     public ResponseEntity<String> updateUser(@PathVariable Long userId, @Valid @RequestBody UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
         try {
-            boolean isSuccess = userService.update(userId, userRegistrationDTO);
-
             if (bindingResult.hasErrors()) {
                 List<String> errors = bindingResult.getAllErrors()
                         .stream()
@@ -105,6 +104,20 @@ public class UserController {
     public ResponseEntity<String> showAllUsers() {
         try {
             List<UserEntity> users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
+            if (users.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body(users.toString());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        }
+    }
+
+    @GetMapping("user/all/{search}")
+    public ResponseEntity<String> searchUsers(@PathVariable String search) {
+        try {
+            List<UserEntity> users = new ArrayList<>(userRepository.findByKeyword(search));
             if (users.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
             } else {
