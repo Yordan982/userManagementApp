@@ -7,6 +7,8 @@ import com.management.userManagement.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -37,7 +39,7 @@ public class UserService {
     }
 
     public boolean update(Long id, UserRegistrationDTO user) {
-        if (isIdPresent(id) && isEmailTakenByCurrentUser(id, user)) {
+        if (isIdPresent(id) && isEmailNotTakenByOtherUser(id, user.getEmail())) {
             UserEntity userEntity = userRepository.findById(id).get();
             userEntity.setFirstName(user.getFirstName());
             userEntity.setLastName(user.getLastName());
@@ -55,11 +57,9 @@ public class UserService {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    private boolean isEmailTakenByCurrentUser(Long id, UserRegistrationDTO user) {
-        if (isEmailTaken(user.getEmail())) {
-            return id.equals(userRepository.findByEmail(user.getEmail()).get().getId());
-        }
-        return false;
+    private boolean isEmailNotTakenByOtherUser(Long id, String email) {
+        Optional<UserEntity> user = userRepository.findByEmail(email);
+        return user.isEmpty() || user.get().getId().equals(id);
     }
 
     private boolean isIdPresent(Long id) {
