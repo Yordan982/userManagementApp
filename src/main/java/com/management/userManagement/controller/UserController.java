@@ -9,6 +9,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,8 +48,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user/{userId}/update")
-    public ResponseEntity<String> updateUser(@PathVariable Long userId, @Valid @RequestBody UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
+    @PutMapping("/user/update/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @Valid @RequestBody UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
                 List<String> errors = bindingResult.getAllErrors()
@@ -58,11 +59,11 @@ public class UserController {
                 return ResponseEntity.badRequest().body(String.join(", ", errors));
             }
 
-            boolean isUpdated = userService.update(userId, userRegistrationDTO);
+            boolean isUpdated = userService.update(id, userRegistrationDTO);
             if (isUpdated) {
                 return ResponseEntity.ok("User updated successfully");
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User id " + userId + " does not exist or the email is already taken.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User id " + id + " does not exist or the email is already taken.");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
@@ -82,7 +83,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/user/{id}/delete")
+    @DeleteMapping("/user/delete/{id}/")
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
         try {
             Long userId = Long.parseLong(id);
@@ -100,18 +101,11 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/all")
-    public ResponseEntity<String> showAllUsers() {
-        try {
-            List<UserEntity> users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
-            if (users.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(users.toString());
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
+    @GetMapping("/user/list")
+    public String listUsers(Model model) {
+        List<UserEntity> users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
+        model.addAttribute("users", users);
+        return "list-users";
     }
 
     @GetMapping("user/all/{search}")
