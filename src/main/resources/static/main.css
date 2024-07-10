@@ -1,3 +1,15 @@
+button, .search-input {
+    all: unset;
+}
+
+.search-input {
+    color: #007bff;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -14,14 +26,16 @@ body {
     border-radius: 10px;
 }
 
-h1 {
+h1, p {
     text-align: center;
     color: #007bff;
 }
 
 .actions {
-    text-align: right;
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .actions .button {
@@ -35,6 +49,7 @@ h1 {
 
 .actions .button:hover {
     background-color: #0057b5;
+    cursor: pointer;
 }
 
 table {
@@ -87,9 +102,4 @@ tbody td {
 
 .button.delete:hover {
     background-color: #ca2536;
-}
-
-.message {
-    text-align: center;
-    color: #007bff;
 }
