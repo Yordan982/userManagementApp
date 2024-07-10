@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Users</title>
+    <link rel="stylesheet" th:href="@{/main.css}"/>
+</head>
+<body>
+<div class="container">
+    <h1>All users</h1>
+    <div class="actions">
+        <a href="/user/register" class="button add-button">Add user</a>
+    </div>
+    <div>
+        <table>
+            <thead class="header">
+            <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Date of birth</th>
+                <th>Phone number</th>
+                <th>Email address</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.firstName}">First name</td>
+                <td th:text="${user.lastName}">Last name</td>
+                <td th:text="${user.dateOfBirth}">Date of birth</td>
+                <td th:text="${user.phoneNumber}">Phone</td>
+                <td th:text="${user.email}">Email address</td>
+                <td>
+                    <a th:href="@{/user/update/{id}(id=${user.id})}" class="button edit">Edit</a>
+                    <a th:href="@{/user/delete/{id}(id=${user.id})}" class="button delete">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:if="${#lists.isEmpty(users)}">
+        <p class="message">No users found</p>
+    </div>
+</div>
+</body>
+</html>
