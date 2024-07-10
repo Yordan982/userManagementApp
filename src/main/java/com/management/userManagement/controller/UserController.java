@@ -13,12 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Controller("/")
+@Controller
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -34,7 +34,7 @@ public class UserController {
         return "index";
     }
 
-    @PostMapping("/user/register")
+    @PostMapping("/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
         try {
             boolean isSuccess = userService.register(registrationDTO);
@@ -48,7 +48,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user/update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id, @Valid @RequestBody UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
         try {
             if (bindingResult.hasErrors()) {
@@ -70,7 +70,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<String> viewUser(@PathVariable String id) {
         try {
             Long userId = Long.parseLong(id);
@@ -83,7 +83,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/user/delete/{id}/")
+    @DeleteMapping("/delete/{id}/")
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
         try {
             Long userId = Long.parseLong(id);
@@ -101,24 +101,16 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/list")
-    public String listUsers(Model model) {
-        List<UserEntity> users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
-        model.addAttribute("users", users);
-        return "list-users";
-    }
-
-    @GetMapping("user/all/{search}")
-    public ResponseEntity<String> searchUsers(@PathVariable String search) {
-        try {
-            List<UserEntity> users = new ArrayList<>(userRepository.findByKeyword(search));
-            if (users.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found.");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(users.toString());
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+    @GetMapping("/list")
+    public String searchUsers(@RequestParam(name = "keyword", required = false) String keyword, Model model) {
+        List<UserEntity> users;
+        if (keyword != null && !keyword.isEmpty()) {
+            users = userRepository.findByKeyword(keyword);
+        } else {
+            users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
         }
+        model.addAttribute("users", users);
+        model.addAttribute("search", keyword);
+        return "list-users";
     }
 }
