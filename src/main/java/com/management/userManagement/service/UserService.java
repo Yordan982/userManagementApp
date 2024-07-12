@@ -7,6 +7,8 @@ import com.management.userManagement.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -19,22 +21,18 @@ public class UserService {
         this.modelMapper = modelMapper;
     }
 
-    public boolean register(UserRegistrationDTO user) {
+    public void register(UserRegistrationDTO user) {
         if (isEmailTaken(user.getEmail())) {
-            return false;
-        } else {
-            UserEntity userEntity = modelMapper.map(user, UserEntity.class);
-            userEntity = userRepository.save(userEntity);
-            return true;
+            throw new IllegalArgumentException("This email address is already used.");
         }
+        userRepository.save(modelMapper.map(user, UserEntity.class));
     }
 
-    public boolean delete(Long id) {
-        if (isIdPresent(id)) {
-            userRepository.delete(userRepository.findById(id).get());
-            return true;
-        } else {
-            return false;
+    public void delete(Long id) {
+        try {
+            userRepository.deleteById(id.intValue());
+        } catch (Exception e) {
+            throw new NoSuchElementException("There is no user with this id");
         }
     }
 
@@ -46,11 +44,27 @@ public class UserService {
             userEntity.setDateOfBirth(user.getDateOfBirth());
             userEntity.setEmail(user.getEmail());
             userEntity.setPhoneNumber(user.getPhoneNumber());
-            userEntity = userRepository.save(userEntity);
+            userRepository.save(userEntity);
             return true;
         } else {
             return false;
         }
+    }
+
+    public void save(UserRegistrationDTO user) {
+        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
+        userRepository.save(userEntity);
+    }
+
+    public List<UserEntity> listAll(String keyword) {
+        List<UserEntity> users;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            users = userRepository.findByKeyword(keyword);
+        } else {
+            users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
+        }
+        return users;
     }
 
     private boolean isEmailTaken(String email) {
