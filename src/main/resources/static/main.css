@@ -12,7 +12,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-image: url("background.jpg");
     margin: 0;
     padding: 0;
 }
@@ -20,7 +20,7 @@ body {
 .container {
     width: 70%;
     margin: 2rem auto;
-    background-color: #ffffff;
+    background: rgb(255, 255, 255, 0.85);
     padding: 2rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
@@ -102,4 +102,8 @@ tbody td {
 
 .button.delete:hover {
     background-color: #ca2536;
+}
+
+.delete-form {
+    display: inline
 }
