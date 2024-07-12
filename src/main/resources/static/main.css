@@ -1,4 +1,4 @@
-button, .search-input {
+.button, .search-input {
     all: unset;
 }
 
@@ -18,10 +18,10 @@ body {
 }
 
 .container {
-    width: 80%;
-    margin: 50px auto;
+    width: 70%;
+    margin: 2rem auto;
     background-color: #ffffff;
-    padding: 20px;
+    padding: 2rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }

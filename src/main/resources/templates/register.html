@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register User</title>
+    <link rel="stylesheet" th:href="@{/register.css}"/>
+</head>
+<body>
+<div class="container">
+    <h1>Register user</h1>
+    <form th:action="@{/user/register}" th:object="${user}" method="post" class="register-form">
+        <div class="form-group">
+            <label for="firstName">First name</label>
+            <input type="text" id="firstName" th:field="*{firstName}" placeholder="First name" class="form-control"
+                   required>
+            <div th:if="${#fields.hasErrors('firstName')}" class="error">
+                <p th:each="err : ${#fields.errors('firstName')}" th:text="${err}">First name error</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last name</label>
+            <input type="text" id="lastName" th:field="*{lastName}" placeholder="Last name" class="form-control"
+                   required>
+            <div th:if="${#fields.hasErrors('lastName')}" class="error">
+                <p th:each="err : ${#fields.errors('lastName')}" th:text="${err}">Last name error</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dateOfBirth">Date of birth</label>
+            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" class="form-control" required>
+            <div th:if="${#fields.hasErrors('dateOfBirth')}" class="error">
+                <p th:each="err : ${#fields.errors('dateOfBirth')}" th:text="${err}">Date of birth error</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="phoneNumber">Phone number</label>
+            <input type="text" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Phone number"
+                   class="form-control" required>
+            <div th:if="${#fields.hasErrors('phoneNumber')}" class="error">
+                <p th:each="err : ${#fields.errors('phoneNumber')}" th:text="${err}">Phone number error</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" id="email" th:field="*{email}" placeholder="Email address" class="form-control"
+                   required>
+            <div th:if="${#fields.hasErrors('email')}" class="error">
+                <p th:each="err : ${#fields.errors('email')}" th:text="${err}">Email error</p>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="button submit-button">Register</button>
+            <a href="/user/list" class="button cancel-button">Cancel</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
