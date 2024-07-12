@@ -8,22 +8,23 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 
 public class UserRegistrationDTO {
-    @NotEmpty
-    @Size(min = 5, max = 30)
+    @NotEmpty(message = "First name is required")
+    @Size(min = 5, max = 30, message = "First name must be between 5 and 30 characters")
     private String firstName;
 
-    @NotEmpty
-    @Size(min = 5, max = 30)
+    @NotEmpty(message = "Last name is required")
+    @Size(min = 5, max = 30, message = "Last name must be between 5 and 30 characters")
     private String lastName;
 
-    @NotNull
+    @NotNull(message = "Date of birth is required")
     private LocalDate dateOfBirth;
 
-    @NotEmpty
-    @Size(min = 10, max = 15)
+    @NotEmpty(message = "Phone number is required")
+    @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 characters")
     private String phoneNumber;
 
-    @Email
+    @Email(message = "Email should be valid")
+    @NotEmpty(message = "Email is required")
     private String email;
 
     public String getFirstName() {
