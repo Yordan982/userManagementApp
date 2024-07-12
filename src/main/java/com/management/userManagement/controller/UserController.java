@@ -29,23 +29,24 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/index")
-    public String index() {
-        return "index";
+    @GetMapping("/register")
+    public String registerUser(Model model) {
+        model.addAttribute("user", new UserRegistrationDTO());
+        return "register";
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegistrationDTO registrationDTO) {
-        try {
-            boolean isSuccess = userService.register(registrationDTO);
-            if (isSuccess) {
-                return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("A user with the same email exists.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+    public String registerUser(@ModelAttribute("user") @Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "register";
         }
+        try {
+            userService.register(userRegistrationDTO);
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("email", "error.user", e.getMessage());
+            return "register";
+        }
+        return "redirect:/user/list";
     }
 
     @PutMapping("/update/{id}")
@@ -70,7 +71,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<String> viewUser(@PathVariable String id) {
         try {
             Long userId = Long.parseLong(id);
@@ -83,32 +84,15 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/delete/{id}/")
-    public ResponseEntity<String> deleteUser(@PathVariable String id) {
-        try {
-            Long userId = Long.parseLong(id);
-            boolean isDeleted = userService.delete(userId);
-            if (isDeleted) {
-                userRepository.deleteById(Integer.valueOf(id));
-                return ResponseEntity.status(HttpStatus.OK).body("User id: " + userId + " was deleted.");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User id " + userId + " does not exist.");
-            }
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid format for user id: " + id);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
+    @DeleteMapping("/delete/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        userService.delete(id);
+        return "redirect:/user/list";
     }
 
     @GetMapping("/list")
     public String searchUsers(@RequestParam(name = "keyword", required = false) String keyword, Model model) {
-        List<UserEntity> users;
-        if (keyword != null && !keyword.isEmpty()) {
-            users = userRepository.findByKeyword(keyword);
-        } else {
-            users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
-        }
+        List<UserEntity> users = userService.listAll(keyword);
         model.addAttribute("users", users);
         model.addAttribute("search", keyword);
         return "list-users";
