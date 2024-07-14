@@ -48,6 +48,14 @@
                 <p th:each="err : ${#fields.errors('email')}" th:text="${err}">Email error</p>
             </div>
         </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" th:field="*{password}" placeholder="Password" class="form-control"
+                   required>
+            <div th:if="${#fields.hasErrors('password')}" class="error">
+                <p th:each="err : ${#fields.errors('password')}" th:text="${err}">Password error</p>
+            </div>
+        </div>
         <div class="form-actions">
             <button type="submit" class="button submit-button">Register</button>
             <a href="/user/list" class="button cancel-button">Cancel</a>
