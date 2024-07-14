@@ -5,7 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-public class UserRegistrationDTO {
+public class UserRegisterDTO {
     @NotEmpty(message = "First name is required")
     @Size(min = 5, max = 30, message = "First name must be between 5 and 30 characters")
     private String firstName;
@@ -26,6 +26,10 @@ public class UserRegistrationDTO {
     @Email(message = "Email should be valid")
     @NotEmpty(message = "Email is required")
     private String email;
+
+    @NotEmpty(message = "Password is required")
+    @Size(min = 10, message = "Password must be at least 10 characters")
+    private String password;
 
     public String getFirstName() {
         return firstName;
@@ -65,5 +69,13 @@ public class UserRegistrationDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
