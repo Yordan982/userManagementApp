@@ -1,6 +1,7 @@
 package com.management.userManagement.controller;
 
-import com.management.userManagement.dto.UserRegistrationDTO;
+import com.management.userManagement.dto.UserRegisterDTO;
+import com.management.userManagement.dto.UserUpdateDTO;
 import com.management.userManagement.model.UserEntity;
 import com.management.userManagement.service.UserService;
 import jakarta.validation.Valid;
@@ -25,17 +26,17 @@ public class UserController {
 
     @GetMapping("/register")
     public String registerUser(Model model) {
-        model.addAttribute("user", new UserRegistrationDTO());
+        model.addAttribute("user", new UserRegisterDTO());
         return "register";
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") @Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
+    public String registerUser(@ModelAttribute("user") @Valid UserRegisterDTO userRegisterDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "register";
         }
         try {
-            userService.register(userRegistrationDTO);
+            userService.register(userRegisterDTO);
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("email", "error.user", e.getMessage());
             return "register";
@@ -45,27 +46,20 @@ public class UserController {
 
     @GetMapping("/update/{id}")
     public String updateUser(@PathVariable Long id, Model model) {
-        UserEntity userEntity = userService.listId(id).orElseThrow(() -> new NoSuchElementException("User ID not found"));
-        UserRegistrationDTO userDto = new UserRegistrationDTO();
-        userDto.setFirstName(userEntity.getFirstName());
-        userDto.setLastName(userEntity.getLastName());
-        userDto.setDateOfBirth(userEntity.getDateOfBirth());
-        userDto.setEmail(userEntity.getEmail());
-        userDto.setPhoneNumber(userEntity.getPhoneNumber());
-
-        model.addAttribute("user", userDto);
+        UserRegisterDTO userRegisterDto = userService.getUpdateDetails(id);
+        model.addAttribute("user", userRegisterDto);
         model.addAttribute("userId", id);
         return "edit-user";
     }
 
-    @PostMapping("/update/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute("user") @Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult, Model model) {
+    @PutMapping("/update/{id}")
+    public String updateUser(@PathVariable Long id, @ModelAttribute("user") @Valid UserUpdateDTO userUpdateDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("userId", id);
             return "edit-user";
         }
         try {
-            userService.update(id, userRegistrationDTO);
+            userService.update(id, userUpdateDTO);
         } catch (IllegalArgumentException e) {
             bindingResult.rejectValue("email", "error.user", e.getMessage());
             model.addAttribute("userId", id);

@@ -1,10 +1,12 @@
 package com.management.userManagement.service;
 
-import com.management.userManagement.dto.UserRegistrationDTO;
+import com.management.userManagement.dto.UserRegisterDTO;
+import com.management.userManagement.dto.UserUpdateDTO;
 import com.management.userManagement.model.UserEntity;
 import com.management.userManagement.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,15 +17,17 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public void register(UserRegistrationDTO user) {
+    public void register(UserRegisterDTO user) {
         if (isEmailTaken(user.getEmail())) {
-            throw new IllegalArgumentException("This email address is already used.");
+            throw new IllegalArgumentException("This email address is already used by another user");
         }
         save(user);
     }
@@ -36,22 +40,35 @@ public class UserService {
         }
     }
 
-    public void update(Long id, UserRegistrationDTO user) {
-        if (isIdPresent(id) && isEmailNotTakenByOtherUser(id, user.getEmail())) {
+    public void update(Long id, UserUpdateDTO userUpdateDTO) {
+        if (isIdPresent(id) && isEmailNotTakenByOtherUser(id, userUpdateDTO.getEmail())) {
             UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("There is no user with this id"));
-            userEntity.setFirstName(user.getFirstName());
-            userEntity.setLastName(user.getLastName());
-            userEntity.setDateOfBirth(user.getDateOfBirth());
-            userEntity.setEmail(user.getEmail());
-            userEntity.setPhoneNumber(user.getPhoneNumber());
+            userEntity.setFirstName(userUpdateDTO.getFirstName());
+            userEntity.setLastName(userUpdateDTO.getLastName());
+            userEntity.setDateOfBirth(userUpdateDTO.getDateOfBirth());
+            userEntity.setEmail(userUpdateDTO.getEmail());
+            userEntity.setPhoneNumber(userUpdateDTO.getPhoneNumber());
             userRepository.save(userEntity);
         } else {
-            throw new IllegalArgumentException("This email address is already used by another user.");
+            throw new IllegalArgumentException("This email address is already used by another user");
         }
     }
 
-    public void save(UserRegistrationDTO user) {
+    public UserRegisterDTO getUpdateDetails(Long id) {
+        UserEntity userEntity = listId(id).orElseThrow(() -> new NoSuchElementException("User ID not found"));
+        UserRegisterDTO userRegisterDto = new UserRegisterDTO();
+        userRegisterDto.setFirstName(userEntity.getFirstName());
+        userRegisterDto.setLastName(userEntity.getLastName());
+        userRegisterDto.setDateOfBirth(userEntity.getDateOfBirth());
+        userRegisterDto.setEmail(userEntity.getEmail());
+        userRegisterDto.setPhoneNumber(userEntity.getPhoneNumber());
+        userRegisterDto.setPassword(userEntity.getPassword());
+        return userRegisterDto;
+    }
+
+    public void save(UserRegisterDTO user) {
         UserEntity userEntity = modelMapper.map(user, UserEntity.class);
+        userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(userEntity);
     }
 
