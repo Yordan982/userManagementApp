@@ -15,7 +15,7 @@ The used technologies are Java, Spring Data, MySQL database, HTML and CSS templa
 
 ## Constraints for register and update a user
 
-The id of the user is automatically assigned by the MySQL, incrementing the last numeric value.
+The id of the user is automatically assigned by the MySQL, incrementing the last numeric value. The register/update methods are using a DTO class.
 
 A user consists of the below attributes, each of them required:
 * First name *(String: between 5 and 30 characters)*
