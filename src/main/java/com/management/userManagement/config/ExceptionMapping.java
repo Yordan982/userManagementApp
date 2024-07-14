@@ -5,19 +5,19 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class ExceptionMapping {
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class,
+            HttpRequestMethodNotSupportedException.class,
+            NoResourceFoundException.class,
+            NoSuchElementException.class})
     @GetMapping
-    public String handleParseException() {
-        return "redirect:/user/list";
-    }
-
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    @GetMapping
-    public String handeUnsupportedMethodException() {
+    public String handleException() {
         return "redirect:/user/list";
     }
 }
