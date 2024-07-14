@@ -71,3 +71,7 @@ Change *{text}* with the keyword to search for. **The query is not case sensitiv
 - The backend searches for maches from the *'firstName', 'lastName', 'phoneNumber' or 'email'* fields using a native MySQL query.
 
 - The results are ordered by last name ascending and then by birth date - older to newer dates.
+
+### Sample of the interface
+
+![image](https://github.com/user-attachments/assets/cc3f0f0d-7b80-434e-ae2a-2c974467906e)
