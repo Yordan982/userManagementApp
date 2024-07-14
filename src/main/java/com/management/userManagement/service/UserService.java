@@ -25,7 +25,7 @@ public class UserService {
         if (isEmailTaken(user.getEmail())) {
             throw new IllegalArgumentException("This email address is already used.");
         }
-        userRepository.save(modelMapper.map(user, UserEntity.class));
+        save(user);
     }
 
     public void delete(Long id) {
@@ -36,18 +36,17 @@ public class UserService {
         }
     }
 
-    public boolean update(Long id, UserRegistrationDTO user) {
+    public void update(Long id, UserRegistrationDTO user) {
         if (isIdPresent(id) && isEmailNotTakenByOtherUser(id, user.getEmail())) {
-            UserEntity userEntity = userRepository.findById(id).get();
+            UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("There is no user with this id"));
             userEntity.setFirstName(user.getFirstName());
             userEntity.setLastName(user.getLastName());
             userEntity.setDateOfBirth(user.getDateOfBirth());
             userEntity.setEmail(user.getEmail());
             userEntity.setPhoneNumber(user.getPhoneNumber());
             userRepository.save(userEntity);
-            return true;
         } else {
-            return false;
+            throw new IllegalArgumentException("This email address is already used by another user.");
         }
     }
 
@@ -65,6 +64,10 @@ public class UserService {
             users = userRepository.findAllByOrderByLastNameAscDateOfBirthAsc();
         }
         return users;
+    }
+
+    public Optional<UserEntity> listId(Long id) {
+        return userRepository.findById(id);
     }
 
     private boolean isEmailTaken(String email) {
