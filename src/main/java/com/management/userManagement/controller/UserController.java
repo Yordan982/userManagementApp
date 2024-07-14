@@ -2,31 +2,25 @@ package com.management.userManagement.controller;
 
 import com.management.userManagement.dto.UserRegistrationDTO;
 import com.management.userManagement.model.UserEntity;
-import com.management.userManagement.repository.UserRepository;
 import com.management.userManagement.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
-    public UserController(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping("/register")
@@ -49,39 +43,50 @@ public class UserController {
         return "redirect:/user/list";
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @Valid @RequestBody UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
-        try {
-            if (bindingResult.hasErrors()) {
-                List<String> errors = bindingResult.getAllErrors()
-                        .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                        .collect(Collectors.toList());
-                return ResponseEntity.badRequest().body(String.join(", ", errors));
-            }
+    @GetMapping("/update/{id}")
+    public String updateUser(@PathVariable Long id, Model model) {
+        UserEntity userEntity = userService.listId(id).orElseThrow(() -> new NoSuchElementException("User ID not found"));
+        UserRegistrationDTO userDto = new UserRegistrationDTO();
+        userDto.setFirstName(userEntity.getFirstName());
+        userDto.setLastName(userEntity.getLastName());
+        userDto.setDateOfBirth(userEntity.getDateOfBirth());
+        userDto.setEmail(userEntity.getEmail());
+        userDto.setPhoneNumber(userEntity.getPhoneNumber());
 
-            boolean isUpdated = userService.update(id, userRegistrationDTO);
-            if (isUpdated) {
-                return ResponseEntity.ok("User updated successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User id " + id + " does not exist or the email is already taken.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
+        model.addAttribute("user", userDto);
+        model.addAttribute("userId", id);
+        return "edit-user";
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<String> viewUser(@PathVariable String id) {
-        try {
-            Long userId = Long.parseLong(id);
-            Optional<UserEntity> user = userRepository.findById(userId);
-            return user.map(userEntity -> ResponseEntity.status(HttpStatus.OK).body(userEntity.toString())).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User id " + userId + " does not exist."));
-        } catch (NumberFormatException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid format for user id: " + id);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+    @PostMapping("/update/{id}")
+    public String updateUser(@PathVariable Long id, @ModelAttribute("user") @Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("userId", id);
+            return "edit-user";
         }
+        try {
+            userService.update(id, userRegistrationDTO);
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("email", "error.user", e.getMessage());
+            model.addAttribute("userId", id);
+            return "edit-user";
+        } catch (NoSuchElementException e) {
+            bindingResult.rejectValue("id", "error.user", e.getMessage());
+            model.addAttribute("userId", id);
+            return "edit-user";
+        }
+        return "redirect:/user/list";
+    }
+
+    @GetMapping("/id")
+    public String viewUser(@RequestParam(name = "id", required = false) Long id, Model model) {
+        Optional<UserEntity> userOptional = userService.listId(id);
+        if (userOptional.isPresent()) {
+            model.addAttribute("users", userOptional.get());
+        } else {
+            model.addAttribute("users", null);
+        }
+        return "list-users";
     }
 
     @DeleteMapping("/delete/{id}")
