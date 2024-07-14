@@ -32,29 +32,37 @@ The program has both frontend and backend implemented. The full functionality is
 * The program automatically executes a SQL query from the **'data.sql'** file that adds 23 users in the database upon the first run. They are added in a **'users'** schema in MySQL Workbench. If you rerun the application and the ids are already present in the SQL table, they will not be updated from this query again.
 * The passwords in the database are encrypted using **BCryptPasswordEncoder**. By default, each of the 23 users has an encrypted password: ```adminadmin```
 
-### To register a user
+### 1. Register a user
 
 The registration form is available at http://localhost:8080/user/register using a **GET** query.
 
 Once the boxes with the data are filled in the frontend, the program uses a **POST** request to sent the data from the form to the backend.
 
-### To update a user
+### 2. Update a user by id
 
 The update form is available at ```http://localhost:8080/user/update/{id}``` using a **GET** query, where {id} is the number of the user.
 * Example: http://localhost:8080/user/update/3
 
 Once the boxes with the data are filled in the frontend, the program uses a **PUT** request to sent the data from the form to the backend and thus updates the current used.
 
-### To delete a user
+### 3. Delete a user by id
 
 * **DELETE** query to ```http://localhost:8080/user/delete/{id}```
 Change the *{id}* inumber with the id to delete. Example: http://localhost:8080/user/delete/3
 
-### To view a list with all users
+### 4. View a user by id
+* **GET** query to ```http://localhost:8080/user/id?id={number}```
+Change *{number}* with the id to search for. Example: http://localhost:8080/user/id?id=10
+
+If a user with this id is not present, you see a *'No users found'* message.
+
+If you enter a non-numeric id it will redirect you to the page where all users from the database are returned.
+
+### 4.1 View a list with all users
 * **GET** query to http://localhost:8080/user/list
 The results are ordered by last name ascending and then by birth date - older to newer dates.
 
-### To view a list with all users matching by keyword
+### 4.2 View a list with all users matching by keyword
 * **GET** query to ```http://localhost:8080/user/list?keyword={text}```
 Change *{text}* with the keyword to search for. **The query is not case sensitive.** Example: http://localhost:8080/user/list?keyword=Nik
 
@@ -63,11 +71,3 @@ Change *{text}* with the keyword to search for. **The query is not case sensitiv
 - The backend searches for maches from the *'firstName', 'lastName', 'phoneNumber' or 'email'* fields using a native MySQL query.
 
 - The results are ordered by last name ascending and then by birth date - older to newer dates.
-
-### To view a single user by id
-* **GET** query to ```http://localhost:8080/user/id?id={number}```
-Change *{number}* with the id to search for. Example: http://localhost:8080/user/id?id=10
-
-If a user with this id is not present, you see a *'No users found'* message.
-
-If you enter a non-numeric id it will redirect you to the page where all users from the database are returned.
