@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>All Users</title>
-    <link rel="stylesheet" th:href="@{/main.css}"/>
+    <link rel="stylesheet" th:href="@{/list-users.css}"/>
 </head>
 <body>
 <div class="container">
     <h1>All users</h1>
     <div class="actions">
+        <form th:action="@{/user/id}" method="get" class="search-form">
+            <input type="text" name="id" placeholder="Search by ID" class="search-input" th:value="${id}"/>
+            <button type="submit" class="button search-button">Go</button>
+        </form>
         <div class="add-button-container">
             <a href="/user/register" class="button add-button">Add user</a>
         </div>
         <form th:action="@{/user/list}" method="get" class="search-form">
-            <input type="text" name="keyword" placeholder="Type to search" class="search-input" th:value="${search}"/>
+            <input type="text" name="keyword" placeholder="Search by keyword" class="search-input" th:value="${search}"/>
             <button type="submit" class="button search-button">Go</button>
         </form>
     </div>
@@ -21,6 +25,7 @@
         <table>
             <thead class="header">
             <tr>
+                <th>Id</th>
                 <th>First name</th>
                 <th>Last name</th>
                 <th>Date of birth</th>
@@ -31,6 +36,7 @@
             </thead>
             <tbody>
             <tr th:each="user : ${users}">
+                <td th:text="${user.id}">Id</td>
                 <td th:text="${user.firstName}">First name</td>
                 <td th:text="${user.lastName}">Last name</td>
                 <td th:text="${user.dateOfBirth}">Date of birth</td>

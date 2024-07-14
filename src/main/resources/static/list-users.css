@@ -88,6 +88,10 @@ tbody td {
     transition: background-color 0.4s;
 }
 
+.button:hover {
+    cursor: pointer;
+}
+
 .button.edit {
     background-color: #29a845;
 }
