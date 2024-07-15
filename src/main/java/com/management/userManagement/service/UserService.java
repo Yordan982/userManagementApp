@@ -43,11 +43,7 @@ public class UserService {
     public void update(Long id, UserUpdateDTO userUpdateDTO) {
         if (isIdPresent(id) && isEmailNotTakenByOtherUser(id, userUpdateDTO.getEmail())) {
             UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("There is no user with this id"));
-            userEntity.setFirstName(userUpdateDTO.getFirstName());
-            userEntity.setLastName(userUpdateDTO.getLastName());
-            userEntity.setDateOfBirth(userUpdateDTO.getDateOfBirth());
-            userEntity.setEmail(userUpdateDTO.getEmail());
-            userEntity.setPhoneNumber(userUpdateDTO.getPhoneNumber());
+            modelMapper.map(userUpdateDTO, userEntity);
             userRepository.save(userEntity);
         } else {
             throw new IllegalArgumentException("This email address is already used by another user");
