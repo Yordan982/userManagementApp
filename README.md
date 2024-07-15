@@ -27,7 +27,7 @@ The id of the user is automatically assigned by the MySQL, incrementing the last
 A user consists of the below attributes, each of them required:
 * First name *(String: between 5 and 30 characters)*
 * Last name *(String: between 5 and 30 characters)*
-* Date of birth *(LocalDate: the date must be in the past; today's date is not accepted; the unified format is yyyy-MM-dd)*
+* Date of birth *(LocalDate: at least 18 years old; the unified format is yyyy-MM-dd)*
 * Phone number *(String: between 10 and 15 characters)*
 * Email *(String: a valid email that contains '@' character; also must be unique - not used by another user)*
 * Password *(String: must be 10 or more characters)*
