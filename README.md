@@ -13,6 +13,13 @@ The used technologies are Java, Spring Data, MySQL database, HTML and CSS templa
 * Run the **UserManagementApplication.java** file.
 * Open http://localhost:8080 from your web browser to access the full web functionality.
 
+## How it works
+
+The program has both frontend and backend implemented. The full functionality is available by filling the data in the browser (http://localhost:8080) and clicking on the buttons that send commands to the database. Alternatively, some REST API commands can also be executed from a tool such as Postman.
+
+* The program automatically executes a SQL query from the **'data.sql'** file that adds 23 users in the database upon the first run. They are added in a **'users'** schema in MySQL Workbench. If you rerun the application and the ids are already present in the SQL table, they will not be updated from this query again.
+* The passwords in the database are encrypted using **BCryptPasswordEncoder**. By default, each of the 23 users has an encrypted password: ```adminadmin```
+
 ## Constraints for register and update a user
 
 The id of the user is automatically assigned by the MySQL, incrementing the last numeric value. The register/update methods are using a DTO class.
@@ -24,13 +31,6 @@ A user consists of the below attributes, each of them required:
 * Phone number *(String: between 10 and 15 characters)*
 * Email *(String: a valid email that contains '@' character; also must be unique - not used by another user)*
 * Password *(String: must be 10 or more characters)*
-
-## How it works
-
-The program has both frontend and backend implemented. The full functionality is available by filling the data in the browser (http://localhost:8080) and clicking on the buttons that send commands to the database. Alternatively, some REST API commands can also be executed from a tool such as Postman.
-
-* The program automatically executes a SQL query from the **'data.sql'** file that adds 23 users in the database upon the first run. They are added in a **'users'** schema in MySQL Workbench. If you rerun the application and the ids are already present in the SQL table, they will not be updated from this query again.
-* The passwords in the database are encrypted using **BCryptPasswordEncoder**. By default, each of the 23 users has an encrypted password: ```adminadmin```
 
 ### 1. Register a user
 
