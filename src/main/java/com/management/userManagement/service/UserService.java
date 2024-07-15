@@ -54,17 +54,11 @@ public class UserService {
         }
     }
 
-    public UserRegisterDTO getUpdateDetails(Long id) {
+    public UserUpdateDTO getUser(Long id) {
         UserEntity userEntity = listId(id).orElseThrow(() -> new NoSuchElementException("User ID not found"));
-        UserRegisterDTO userRegisterDto = new UserRegisterDTO();
-        userRegisterDto.setFirstName(userEntity.getFirstName());
-        userRegisterDto.setLastName(userEntity.getLastName());
-        userRegisterDto.setDateOfBirth(userEntity.getDateOfBirth());
-        userRegisterDto.setEmail(userEntity.getEmail());
-        userRegisterDto.setPhoneNumber(userEntity.getPhoneNumber());
-        userRegisterDto.setPassword(userEntity.getPassword());
-        return userRegisterDto;
+        return this.modelMapper.map(userEntity, UserUpdateDTO.class);
     }
+
 
     public void save(UserRegisterDTO user) {
         UserEntity userEntity = modelMapper.map(user, UserEntity.class);
