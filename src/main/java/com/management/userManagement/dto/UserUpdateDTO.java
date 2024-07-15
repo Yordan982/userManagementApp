@@ -1,5 +1,6 @@
 package com.management.userManagement.dto;
 
+import com.management.userManagement.validate.MinAge;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,7 +16,7 @@ public class UserUpdateDTO {
     private String lastName;
 
     @NotNull(message = "Date of birth is required")
-    @Past(message = "Date of birth must be a past date")
+    @MinAge(value = 18)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
