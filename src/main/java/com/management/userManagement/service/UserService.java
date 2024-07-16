@@ -6,12 +6,15 @@ import com.management.userManagement.model.UserEntity;
 import com.management.userManagement.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -55,6 +58,10 @@ public class UserService {
         return this.modelMapper.map(userEntity, UserUpdateDTO.class);
     }
 
+    public UserEntity getUserText(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User ID not found"));
+    }
+
 
     public void save(UserRegisterDTO user) {
         UserEntity userEntity = modelMapper.map(user, UserEntity.class);
@@ -73,8 +80,30 @@ public class UserService {
         return users;
     }
 
+    public ResponseEntity<String> responseListAll() {
+        List<UserEntity> users = listAll("");
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body("No users found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(streamUsersToString(users));
+    }
+
+    public ResponseEntity<String> responseListAllKeyword(String keyword) {
+        List<UserEntity> users = listAll(keyword);
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body("No users found for keyword: " + keyword);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(streamUsersToString(users));
+    }
+
     public Optional<UserEntity> listId(Long id) {
         return userRepository.findById(id);
+    }
+
+    private String streamUsersToString(List<UserEntity> users) {
+        return users.stream()
+                .map(UserEntity::toString)
+                .collect(Collectors.joining("\n"));
     }
 
     private boolean isEmailTaken(String email) {
